@@ -26,19 +26,22 @@ All projects will require the following:
 ## Phase 0: Force Selection, Analysis & Plan
 ---------- 
 
-#### Custom Force: NAME OF YOUR FORCE
+#### Custom Force: Buoyant Force 
 
 ### Forumla
 What is the formula for your force? Including descriptions/definitions for the symbols. (You may include a picture of the formula if it is not easily typed.)
 
-YOUR ANSWER HERE
+F = ρ V g
+Force = density of fluid * volume of submerged object OR volume of fluid displaced * acceleration due to gravity
+Because the simulation will be 2 dimensional, volume in this equation will be area
 
 ### Custom Force
 - What information that is already present in the `Orb` or `OrbNode` classes does this force use?
-  - YOUR ANSWER HERE
+  - Area (derived from radius)
+  - Acceleration due to gravity is something that is set in the driver file
 
 - Does this force require any new constants, if so what are they and what values will you try initially?
-  - YOUR ANSWER HERE
+  - Density of the fluid. 
 
 - Does this force require any new information to be added to the `Orb` class? If so, what is it and what data type will you use?
   - YOUR ANSWER HERE
