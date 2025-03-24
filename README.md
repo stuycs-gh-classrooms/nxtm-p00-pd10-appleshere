@@ -37,25 +37,28 @@ Because the simulation will be 2 dimensional, volume in this equation will be ar
 
 ### Custom Force
 - What information that is already present in the `Orb` or `OrbNode` classes does this force use?
-  - Area (derived from radius)
   - Acceleration due to gravity is something that is set in the driver file
 
 - Does this force require any new constants, if so what are they and what values will you try initially?
-  - Density of the fluid. 
+  - Density of the fluid in mass per area, initial value will be pretty low: 0.1 mass units per pixel
 
 - Does this force require any new information to be added to the `Orb` class? If so, what is it and what data type will you use?
-  - YOUR ANSWER HERE
+  - Area (derived from radius): will use a float
+  - A method that will return a PVector to be used as an argument in the applyForce() method
 
 - Does this force interact with other `Orbs`, or is it applied based on the environment?
-  - YOUR ANSWER HERE
+  - Applied based on the environment
+  - Later versions may involve a buoyant force not in a singular direction throught the whole screen, for instance, buoyant force around a fixed orb that acts as a planet.
 
 - In order to calculate this force, do you need to perform extra intermediary calculations? If so, what?
-  - YOUR ANSWER HERE
+  - No
 
 --- 
 
 ### Simulation 1: Gravity
 Describe how you will attempt to simulate orbital motion.
+
+
 
 --- 
 
