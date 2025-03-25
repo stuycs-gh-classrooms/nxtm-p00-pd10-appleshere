@@ -58,6 +58,7 @@ Because the simulation will be 2 dimensional, volume in this equation will be ar
 ### Simulation 1: Gravity
 Describe how you will attempt to simulate orbital motion.
 
+We will apply the appropriate calculated PVector for orbs free to move, and assign a non-moving orb as a stationary mass. The PVector applied should follow the formula F = (G * m1 * m2) / r^2. OR, if that doesn't work, we can set a stationary mass, calculate the PVector that would represent the gravatiational field at a given point within the field, and then apply that acceleration to the moving masses. Though, we would most likely have to simulate the motion using F = m(v^2 / r).
 
 
 --- 
@@ -65,14 +66,14 @@ Describe how you will attempt to simulate orbital motion.
 ### Simulation 2: Spring
 Describe what your spring simulation will look like. Explain how it will be setup, and how it should behave while running.
 
-YOUR ANSWER HERE
+We will create a linked list of orbs that will display differently colored springs depending on whether the spring has been compressed or stretched. All springs will have the same spring constant; if the spring is compressed, the orbs should be repelled from one another- if the spring is stretched, the orbs should be pulled towards one another. 
 
 --- 
 
 ### Simulation 3: Drag
 Describe what your drag simulation will look like. Explain how it will be setup, and how it should behave while running.
 
-YOUR ANSWER HERE
+Drag will simply add a force (calculated PVector) to an orb in the direction opposite to its velocity, ultimately "slowing the orb down". It would only be enacted within a set range of y-coordinates (if the moving orbs pass height/2, for example) to visually demonstrate the difference between orbs expereiencing no drag and orbs experiencing drag. 
 
 --- 
 
