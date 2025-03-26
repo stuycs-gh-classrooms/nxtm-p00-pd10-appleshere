@@ -80,12 +80,13 @@ Drag will simply add a force (calculated PVector) to an orb in the direction opp
 ### Simulation 4: Custom force
 Describe what your Custom force simulation will look like. Explain how it will be setup, and how it should behave while running.
 
-YOUR ANSWER HERE
+We will simulate three instances or the orb class, one with a density greater than the fluid(it will sink), one less than(it will float), one that is the same (it will not accelerate)
 
 --- 
 
 ### Simulation 5: Combination
 Describe what your combination simulation will look like. Explain how it will be setup, and how it should behave while running.
 
-YOUR ANSWER HERE
+The fluid will be affected by a fixed orb, and the buoyant force will act away from that fixed orb.
+Maybe multiple orbs or moving orbs gravity will have an effect (if we feel like it).
 
