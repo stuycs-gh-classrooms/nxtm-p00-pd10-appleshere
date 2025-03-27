@@ -87,6 +87,4 @@ We will simulate three instances or the orb class, one with a density greater th
 ### Simulation 5: Combination
 Describe what your combination simulation will look like. Explain how it will be setup, and how it should behave while running.
 
-The fluid will be affected by a fixed orb, and the buoyant force will act away from that fixed orb.
-Maybe multiple orbs or moving orbs gravity will have an effect (if we feel like it).
-
+The fluid class will have a value of drag to more realistically show the effects of fluid.
