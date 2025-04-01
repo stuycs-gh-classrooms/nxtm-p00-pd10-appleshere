@@ -28,11 +28,6 @@ class OrbList {
 
   OrbNode front;
 
-  /*===========================
-    Contructor
-    Does very little.
-    You do not need to modify this method.
-    =========================*/
 //constructor
 
   /*===========================
@@ -126,7 +121,10 @@ class OrbList {
     
     
     
+    
   }//applySprings
+  
+
 
   /*===========================
     run(boolean bounce)

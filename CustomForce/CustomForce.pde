@@ -1,11 +1,4 @@
 /* ===================================
-SpringListDriver (No Work Goes Here)
-
-This program will work similarly to SpringArrayDriver,
-but it will use a linked list of OrbNodes instead of
-an array. This driver file is complete, all your work should
-be done in the OrbList class. When working, the program can
-be controlled as follows:
 
 Keyboard commands:
   1: Create a new list of orbs in a line.
@@ -39,9 +32,14 @@ int DRAGF = 3;
 boolean[] toggles = new boolean[4];
 String[] modes = {"Moving", "Bounce", "Gravity", "Drag"};
 
+
+boolean balls = false;
+
 FixedOrb earth;
 
 OrbList slinky;
+
+Orb[] indiv = new Orb[NUM_ORBS];
 
 void setup() {
   size(600, 600);
@@ -50,21 +48,44 @@ void setup() {
 
   slinky = new OrbList();
   slinky.populate(NUM_ORBS, true);
+  
+  for (int i = 0; i < indiv.length - 1; i++){
+     indiv[i] = new Orb(random(10,60), random(10,20), random (MIN_SIZE, MAX_SIZE), random(MIN_MASS,MAX_MASS));
+  }
+
+    
 }//setup
 
 void draw() {
   background(255);
   displayMode();
+  
+  if (balls){
+    for (int i = 0; i < indiv.length - 1; i++){
+      indiv[i].display();
+    }
+  }
+  else {
+    slinky.display();
+  }
 
-  slinky.display();
 
   if (toggles[MOVING]) {
-
-    slinky.applySprings(SPRING_LENGTH, SPRING_K);
+    if (balls){
+      for (int i = 0; i < indiv.length - 1; i ++){
+        PVector grav = indiv[i].getGravity(earth, GRAVITY);
+        indiv[i].applyForce(grav);
+      }
+    }
+    else {
+      slinky.applySprings(SPRING_LENGTH, SPRING_K);
+    }
 
     if (toggles[GRAVITY]) {
       slinky.applyGravity(earth, GRAVITY);
     }
+
+    
     slinky.run(toggles[BOUNCE]);
   }//moving
 }//draw
