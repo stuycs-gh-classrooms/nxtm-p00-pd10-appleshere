@@ -1,3 +1,4 @@
+
 /* ===================================
 
 Keyboard commands:
@@ -44,14 +45,12 @@ Orb[] indiv = new Orb[NUM_ORBS];
 void setup() {
   size(600, 600);
 
-  earth = new FixedOrb(width/2, height * 200, 1, 20000);
-
+  earth = new FixedOrb(height/2, width / 2, 50, 20000);
+ 
   slinky = new OrbList();
   slinky.populate(NUM_ORBS, true);
   
-  for (int i = 0; i < indiv.length - 1; i++){
-     indiv[i] = new Orb(random(10,60), random(10,20), random (MIN_SIZE, MAX_SIZE), random(MIN_MASS,MAX_MASS));
-  }
+  indivPop();
 
     
 }//setup
@@ -59,8 +58,10 @@ void setup() {
 void draw() {
   background(255);
   displayMode();
-  
+
   if (balls){
+    earth.display();  
+
     for (int i = 0; i < indiv.length - 1; i++){
       indiv[i].display();
     }
@@ -71,24 +72,37 @@ void draw() {
 
 
   if (toggles[MOVING]) {
-    if (balls){
-      for (int i = 0; i < indiv.length - 1; i ++){
-        PVector grav = indiv[i].getGravity(earth, GRAVITY);
-        indiv[i].applyForce(grav);
-      }
-    }
-    else {
-      slinky.applySprings(SPRING_LENGTH, SPRING_K);
-    }
 
-    if (toggles[GRAVITY]) {
-      slinky.applyGravity(earth, GRAVITY);
-    }
+
+      slinky.applySprings(SPRING_LENGTH, SPRING_K);
+    
+
+      if (toggles[GRAVITY]) {
+        if (balls){
+          indivDisandMov();
+        }
+        
+       
+      }
 
     
     slinky.run(toggles[BOUNCE]);
   }//moving
 }//draw
+
+void indivDisandMov(){
+  for (int i = 0; i < indiv.length - 1; i ++){
+    PVector grav = indiv[i].getGravity(earth, GRAVITY);
+    indiv[i].applyForce(grav);
+    indiv[i].move(toggles[BOUNCE]);
+  }
+}
+
+void indivPop(){
+  for (int i = 0; i < indiv.length - 1; i++){
+     indiv[i] = new Orb(random(10,60), random(10,20), random (MIN_SIZE, MAX_SIZE), random(MIN_MASS,MAX_MASS));
+  }
+}
 
 void mousePressed() {
   OrbNode selected = slinky.getSelected(mouseX, mouseY);
@@ -99,7 +113,7 @@ void mousePressed() {
 
 void keyPressed() {
   if (key == ' ') { toggles[MOVING] = !toggles[MOVING]; }
-  if (key == 'g') { toggles[GRAVITY] = !toggles[GRAVITY]; }
+  if (key == 'g') { toggles[GRAVITY] = !toggles[GRAVITY]; balls = !balls; }
   if (key == 'b') { toggles[BOUNCE] = !toggles[BOUNCE]; }
   if (key == 'd') { toggles[DRAGF] = !toggles[DRAGF]; }
   if (key == '=' || key =='+') {
@@ -110,9 +124,12 @@ void keyPressed() {
   }
   if (key == '1') {
     slinky.populate(NUM_ORBS, true);
+    indivPop();
+    
   }
   if (key == '2') {
     slinky.populate(NUM_ORBS, false);
+    indivDisandMov();
   }
 }//keyPressed
 
