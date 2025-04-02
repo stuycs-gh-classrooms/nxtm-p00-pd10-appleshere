@@ -60,9 +60,9 @@ class OrbList {
     type = sim;
     if (sim == 1) {
       balls = new Orb[2];
-      balls[0] = new FixedOrb(width/2, height/2, 50, 20000);
-      balls[1] = new Orb(width/2, height/2 + 100, 20, 100);
-      balls[1].velocity = new PVector(20, 0);
+      balls[0] = new FixedOrb(width/2, height/2, 50, 100);
+      balls[1] = new Orb(width/2, height/2 + 100, 20, 10);
+      balls[1].velocity = new PVector(10, 0);
     }//gravity sim setup
     if (sim == 2) {
       front = null;
@@ -88,10 +88,17 @@ class OrbList {
    the display method defined in the OrbNode class.
    =========================*/
   void display() {
-    OrbNode current = front;
-    while (current != null) {
-      current.display();
-      current = current.next;
+    if (type == 1) {
+      for (int i = 0; i < balls.length; i ++) {
+        balls[i].display();
+      }
+    }
+    if (type == 2) {
+      OrbNode current = front;
+      while (current != null) {
+        current.display();
+        current = current.next;
+      }
     }
   }//display
 
@@ -133,7 +140,9 @@ class OrbList {
    Call run on each node in the list.
    =========================*/
   void run(boolean bounce) {
-
+    for (int i = 0; i < balls.length; i ++) {
+      balls[i].move(toggles[BOUNCE]);
+    }
     OrbNode current = front;
     while (current != null) {
       current.move(bounce);
@@ -202,5 +211,14 @@ class OrbList {
   }
 
   void applyForces() {
+    if (type == 1) {
+      for (int i = 1; i < balls.length; i ++) {
+        PVector grav = balls[i].getGravity(balls[0], GRAVITY);
+        balls[i].applyForce(grav);
+      }
+    }
+    if (type == 2) {
+      applySprings(SPRING_LENGTH, SPRING_K);
+    }
   }
 }//OrbList
