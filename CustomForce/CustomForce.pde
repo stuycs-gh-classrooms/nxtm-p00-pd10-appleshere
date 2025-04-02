@@ -1,18 +1,19 @@
 
 /* ===================================
-
-Keyboard commands:
-  1: Create a new list of orbs in a line.
-  2: Create a new list of random orbs.
-  =: add a new node to the front of the list
-  -: remove the node at the front
-  SPACE: Toggle moving on/off
-  g: Toggle earth gravity on/off
-
-Mouse Commands:
-  mousePressed: if the mouse is over an
-    orb, remove it from the list.
-=================================== */
+ 
+ Keyboard commands:
+ 1: Gravity Simulation
+ 2: Spring Simulatioin
+ 3: Drag Simulation
+ =: add a new node to the front of the list
+ -: remove the node at the front
+ SPACE: Toggle moving on/off
+ g: Toggle earth gravity on/off
+ 
+ Mouse Commands:
+ mousePressed: if the mouse is over an
+ orb, remove it from the list.
+ =================================== */
 
 
 int NUM_ORBS = 10;
@@ -33,103 +34,76 @@ int DRAGF = 3;
 boolean[] toggles = new boolean[4];
 String[] modes = {"Moving", "Bounce", "Gravity", "Drag"};
 
-
-boolean balls = false;
-
-FixedOrb earth;
-
-OrbList slinky;
-
-Orb[] indiv = new Orb[NUM_ORBS];
+OrbList orbs;
 
 void setup() {
   size(600, 600);
-
-  earth = new FixedOrb(height/2, width / 2, 50, 20000);
- 
-  slinky = new OrbList();
-  slinky.populate(NUM_ORBS, true);
-  
-  indivPop();
-
-    
+  orbs = new OrbList();
+  orbs.populate(NUM_ORBS, true, 1);
 }//setup
 
 void draw() {
   background(255);
   displayMode();
 
-  if (balls){
-    earth.display();  
-
-    for (int i = 0; i < indiv.length - 1; i++){
-      indiv[i].display();
-    }
-  }
-  else {
-    slinky.display();
-  }
-
-
+  orbs.display();
   if (toggles[MOVING]) {
-
-
-      slinky.applySprings(SPRING_LENGTH, SPRING_K);
-    
-
-      if (toggles[GRAVITY]) {
-        if (balls){
-          indivDisandMov();
-        }
-        
-       
-      }
-
-    
-    slinky.run(toggles[BOUNCE]);
+    orbs.applyForces();
+    orbs.run(toggles[BOUNCE]);
   }//moving
 }//draw
 
-void indivDisandMov(){
-  for (int i = 0; i < indiv.length - 1; i ++){
-    PVector grav = indiv[i].getGravity(earth, GRAVITY);
-    indiv[i].applyForce(grav);
-    indiv[i].move(toggles[BOUNCE]);
-  }
-}
-
-void indivPop(){
-  for (int i = 0; i < indiv.length - 1; i++){
-     indiv[i] = new Orb(random(10,60), random(10,20), random (MIN_SIZE, MAX_SIZE), random(MIN_MASS,MAX_MASS));
-  }
-}
+/*
+void indivDisandMov() {
+ for (int i = 0; i < indiv.length - 1; i ++) {
+ PVector grav = indiv[i].getGravity(earth, GRAVITY);
+ indiv[i].applyForce(grav);
+ indiv[i].move(toggles[BOUNCE]);
+ }
+ }
+ 
+ 
+ void indivPop() {
+ for (int i = 0; i < indiv.length - 1; i++) {
+ indiv[i] = new Orb(random(10, 60), random(10, 20), random (MIN_SIZE, MAX_SIZE), random(MIN_MASS, MAX_MASS));
+ }
+ }
+ */
 
 void mousePressed() {
-  OrbNode selected = slinky.getSelected(mouseX, mouseY);
+  OrbNode selected = orbs.getSelected(mouseX, mouseY);
   if (selected != null) {
-    slinky.removeNode(selected);
+    orbs.removeNode(selected);
   }
 }//mousePressed
 
 void keyPressed() {
-  if (key == ' ') { toggles[MOVING] = !toggles[MOVING]; }
-  if (key == 'g') { toggles[GRAVITY] = !toggles[GRAVITY]; balls = !balls; }
-  if (key == 'b') { toggles[BOUNCE] = !toggles[BOUNCE]; }
-  if (key == 'd') { toggles[DRAGF] = !toggles[DRAGF]; }
-  if (key == '=' || key =='+') {
-    slinky.addFront(new OrbNode());
+  if (key == ' ') {
+    toggles[MOVING] = !toggles[MOVING];
   }
-  if (key == '-') {
-    slinky.removeFront();
+  if (key == 'g') {
+    toggles[GRAVITY] = !toggles[GRAVITY];
+  }
+  if (key == 'b') {
+    toggles[BOUNCE] = !toggles[BOUNCE];
+  }
+  if (key == 'd') {
+    toggles[DRAGF] = !toggles[DRAGF];
+  }
+  if ((key == '=' || key =='+') && orbs.type == 2) {
+    orbs.addFront(new OrbNode());
+  }
+  if (key == '-' && orbs.type == 2) {
+    orbs.removeFront();
   }
   if (key == '1') {
-    slinky.populate(NUM_ORBS, true);
-    indivPop();
-    
+    orbs.populate(NUM_ORBS, true, 1);
   }
   if (key == '2') {
-    slinky.populate(NUM_ORBS, false);
-    indivDisandMov();
+    orbs.populate(NUM_ORBS, false, 2);
+  }
+  if (key == '3') {
+    orbs.populate(NUM_ORBS, false, 3);
   }
 }//keyPressed
 
@@ -143,8 +117,11 @@ void displayMode() {
 
   for (int m=0; m<toggles.length; m++) {
     //set box color
-    if (toggles[m]) { fill(0, 255, 0); }
-    else { fill(255, 0, 0); }
+    if (toggles[m]) {
+      fill(0, 255, 0);
+    } else {
+      fill(255, 0, 0);
+    }
 
     float w = textWidth(modes[m]);
     rect(x, 0, w+5, 20);
