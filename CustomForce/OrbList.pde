@@ -66,19 +66,24 @@ class OrbList {
     }//gravity sim setup
     if (sim == 2) {
       front = null;
-      int num = n;
       if (ordered) {
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < n; i++) {
           addFront(new OrbNode());
           front.center.x = SPRING_LENGTH * i;
           front.center.y = height / 2;
         }
       } else {
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < n; i++) {
           addFront(new OrbNode());
         }
       }
     }//spring sim setup
+    if (type == 3) {
+      balls = new Orb[n];
+      for(int i = 0; i < n; i++){
+        balls[i] = new Orb();
+      }
+    }
   }//populate
 
   /*===========================
@@ -88,7 +93,7 @@ class OrbList {
    the display method defined in the OrbNode class.
    =========================*/
   void display() {
-    if (type == 1) {
+    if (type == 1 || type == 3) {
       for (int i = 0; i < balls.length; i ++) {
         balls[i].display();
       }
@@ -216,9 +221,26 @@ class OrbList {
         PVector grav = balls[i].getGravity(balls[0], GRAVITY);
         balls[i].applyForce(grav);
       }
-    }
+    }//gravity sim
     if (type == 2) {
       applySprings(SPRING_LENGTH, SPRING_K);
+      if (toggles[GRAVITY]) {
+        OrbNode current = front;
+        while (current.next != null) {
+          applyGravity(current.next, G_CONSTANT);
+          current = current.next;
+        }
+      }
+    }//spring sim
+    if (type == 3) {
+      if (toggles[DRAGF] ) {
+        for (int i = 0; i < balls.length; i++) {
+          balls[i].applyForce(ARTI_GRAV);
+          if (balls[i].center.x < width/2) {
+            balls[i].applyForce(balls[i].getDragForce(D_COEF));
+          }
+        }
+      }
     }
   }
 }//OrbList

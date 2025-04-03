@@ -21,8 +21,9 @@ int MIN_SIZE = 10;
 int MAX_SIZE = 60;
 float MIN_MASS = 10;
 float MAX_MASS = 100;
+PVector ARTI_GRAV = new PVector(0, 1);
 float G_CONSTANT = 1;
-float D_COEF = 0.1;
+float D_COEF = 100;
 
 int SPRING_LENGTH = 50;
 float  SPRING_K = 0.005;
@@ -104,6 +105,8 @@ void keyPressed() {
   }
   if (key == '3') {
     orbs.populate(NUM_ORBS, false, 3);
+    toggles[DRAGF] = true;
+    toggles[BOUNCE] = true;
   }
 }//keyPressed
 
@@ -114,7 +117,12 @@ void displayMode() {
   noStroke();
   int spacing = 85;
   int x = 0;
-
+  
+  if(toggles[DRAGF]){
+    fill(204, 229, 255);
+    rect(0, 0, width/2, height);
+  }
+  
   for (int m=0; m<toggles.length; m++) {
     //set box color
     if (toggles[m]) {
