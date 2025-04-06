@@ -1,4 +1,5 @@
 
+
 /* ===================================
  
  Keyboard commands:
@@ -32,26 +33,47 @@ int MOVING = 0;
 int BOUNCE = 1;
 int GRAVITY = 2;
 int DRAGF = 3;
-boolean[] toggles = new boolean[4];
-String[] modes = {"Moving", "Bounce", "Gravity", "Drag"};
+int SPRINGS = 4;
+int CUSTOMS = 5;
+int MIX = 6;
+boolean[] toggles = new boolean[7];
+String[] modes = {"Moving", "Bounce", "Gravity", "Drag", "Springs", "Custom", "Mix"};
 
+FixedOrb earth;
 OrbList orbs;
 
 void setup() {
+  
   size(600, 600);
   orbs = new OrbList();
   orbs.populate(NUM_ORBS, true, 1);
+  earth = new FixedOrb (width/2, height/2, 50, 100);
 }//setup
 
 void draw() {
   background(255);
   displayMode();
+   
+    fill (255);
+    rect(0, 25, width, height);
+    if(toggles[DRAGF]|| toggles[MIX]){
+      fill(204, 229, 255);
+      rect(0, 20, width/2, height);
+    }
+    
+  
+  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[CUSTOMS] || toggles[MIX]){
+    orbs.display();
+    if (toggles[MOVING]) {
+      orbs.applyForces();
+      orbs.run(toggles[BOUNCE]);
+    }//moving
+    if (toggles[MIX]){
+      earth.display();
+    }
+  }
+  
 
-  orbs.display();
-  if (toggles[MOVING]) {
-    orbs.applyForces();
-    orbs.run(toggles[BOUNCE]);
-  }//moving
 }//draw
 
 /*
@@ -71,43 +93,48 @@ void indivDisandMov() {
  }
  */
 
-void mousePressed() {
-  OrbNode selected = orbs.getSelected(mouseX, mouseY);
-  if (selected != null) {
-    orbs.removeNode(selected);
-  }
-}//mousePressed
+
 
 void keyPressed() {
+  boolean bou;
+  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[CUSTOMS] || toggles[MIX]){
+    bou = true;
+  }
+  else { bou = false; }
+  
+  
   if (key == ' ') {
     toggles[MOVING] = !toggles[MOVING];
   }
-  if (key == 'g') {
+  if (key == '1' && !toggles[DRAGF] && !toggles[SPRINGS] && !toggles[MIX]) {
     toggles[GRAVITY] = !toggles[GRAVITY];
+    orbs.populate(NUM_ORBS, true, 1);
+
   }
-  if (key == 'b') {
+  if (key == 'b' && bou) {
     toggles[BOUNCE] = !toggles[BOUNCE];
   }
-  if (key == 'd') {
+  if (key == '3' && !toggles[GRAVITY] && !toggles[SPRINGS] && !toggles[MIX]) {
     toggles[DRAGF] = !toggles[DRAGF];
-  }
-  if ((key == '=' || key =='+') && orbs.type == 2) {
-    orbs.addFront(new OrbNode());
-  }
-  if (key == '-' && orbs.type == 2) {
-    orbs.removeFront();
-  }
-  if (key == '1') {
-    orbs.populate(NUM_ORBS, true, 1);
-  }
-  if (key == '2') {
-    orbs.populate(NUM_ORBS, false, 2);
-  }
-  if (key == '3') {
     orbs.populate(NUM_ORBS, false, 3);
-    toggles[DRAGF] = true;
-    toggles[BOUNCE] = true;
+        
   }
+  if (key == '5'){
+    // springs, orbital gravity, and drag
+    toggles[MIX] = !toggles[MIX];
+    orbs.populate(NUM_ORBS, false, 2);     
+  }
+
+
+
+  if (key == '2' && !toggles[DRAGF] && !toggles[GRAVITY]) {
+    toggles[SPRINGS] = !toggles[SPRINGS];
+      if (toggles[SPRINGS]){
+        orbs.populate(NUM_ORBS, false, 2);
+      }
+  }
+   
+    
 }//keyPressed
 
 
@@ -118,10 +145,7 @@ void displayMode() {
   int spacing = 85;
   int x = 0;
   
-  if(toggles[DRAGF]){
-    fill(204, 229, 255);
-    rect(0, 0, width/2, height);
-  }
+  
   
   for (int m=0; m<toggles.length; m++) {
     //set box color
