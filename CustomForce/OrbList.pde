@@ -1,27 +1,5 @@
 /*===========================
- OrbList (ALL WORK GOES HERE)
- 
- Class to represent a Linked List of OrbNodes.
- 
- Instance Variables:
- OrbNode front:
- The first element of the list.
- Initially, this will be null.
- 
- Methods to work on:
- 0. addFront
- 1. populate
- 2. display
- 3. applySprings
- 4. applyGravity
- 5. run
- 6. removeFront
- 7. getSelected
- 8. removeNode
- 
- When working on these methods, make sure to
- account for null values appropraitely. When the program
- is run, no NullPointerExceptions should occur.
+ OrbList 
  =========================*/
 
 class OrbList {
@@ -122,20 +100,7 @@ class OrbList {
     }
   }//applySprings
 
-  /*===========================
-   applyGravity(Orb other, float gConstant)
-   
-   Use the getGravity and applyForce methods
-   to apply gravity crrectly.
-   =========================*/
-  void applyGravity(Orb other, float gConstant) {
 
-    OrbNode current = front;
-    while (current != null) {
-      current.applyForce(current.getGravity(other, gConstant));
-      current = current.next;
-    }
-  }//applySprings
 
 
 
@@ -155,65 +120,8 @@ class OrbList {
     }
   }//applySprings
 
-  /*===========================
-   removeFront()
-   
-   Remove the element at the front of the list, i.e.
-   after this method is run, the former second element
-   should now be the first (and so on).
-   =========================*/
-  void removeFront() {
-
-    front.next.previous = null;
-    front = front.next;
-  }//removeFront
 
 
-  /*===========================
-   getSelected(float x, float y)
-   
-   If there is a node at (x, y), return
-   a reference to that node.
-   Otherwise, return null.
-   
-   See isSlected(float x, float y) in
-   the Orb class (line 115).
-   =========================*/
-  OrbNode getSelected(int x, int y) {
-
-    OrbNode current = front;
-    while (current != null) {
-      if (current.isSelected(x, y)) {
-        return current;
-      }
-      current = current.next;
-    }
-
-    return null;
-  }//getSelected
-
-  /*===========================
-   removeNode(OrbNode o)
-   
-   Removes o from the list. You can
-   assume o is an OrbNode in the list.
-   You cannot assume anything about the
-   position of o in the list.
-   =========================*/
-  void removeNode(OrbNode o) {
-
-    if (o.previous != null && o.next != null) {
-      o.previous.next = o.next;
-      o.next.previous = o.previous;
-    } else if (o == front) {
-      o.next.previous = null;
-      front = o.next;
-    } else if (o.next == null) {
-
-      o.previous.next = null;
-    }
-    o = null;
-  }
 
   void applyForces() {
     if (type == 1) {
@@ -224,16 +132,24 @@ class OrbList {
     }//gravity sim
     if (type == 2) {
       applySprings(SPRING_LENGTH, SPRING_K);
-      if (toggles[GRAVITY]) {
-        OrbNode current = front;
-        while (current.next != null) {
-          applyGravity(current.next, G_CONSTANT);
-          current = current.next;
-        }
-      }
-    }//spring sim
+
+      if (toggles[MIX]){
+          OrbNode current = front;
+          while (current != null) {
+            PVector grav = current.getGravity(earth, GRAVITY);
+            current.applyForce(grav);
+            if (current.center.x < width/2){
+              PVector artidrag = (current.velocity.mult( -0.75));
+              current.applyForce(artidrag);
+            }                               
+            current = current.next;
+          }
+       }        
+    }//spring sim || mix sim
+    
+    
     if (type == 3) {
-      if (toggles[DRAGF] ) {
+      if (toggles[DRAGF]) {
         for (int i = 0; i < balls.length; i++) {
           balls[i].applyForce(ARTI_GRAV);
           if (balls[i].center.x < width/2) {
