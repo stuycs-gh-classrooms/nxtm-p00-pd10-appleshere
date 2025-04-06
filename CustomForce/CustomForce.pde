@@ -3,17 +3,14 @@
 /* ===================================
  
  Keyboard commands:
- 1: Gravity Simulation
- 2: Spring Simulatioin
- 3: Drag Simulation
- =: add a new node to the front of the list
- -: remove the node at the front
- SPACE: Toggle moving on/off
- g: Toggle earth gravity on/off
- 
- Mouse Commands:
- mousePressed: if the mouse is over an
- orb, remove it from the list.
+' ': movement on/off
+'b': wall bouncing on/off
+'1': Setup simulation 1 (orbital gravity)
+'2': Setup simulation 2 (spring)
+'3': Setup simulation 3 (drag)
+'3': Setup simulation 4 (custom)
+'3': Setup simulation 5 (combination)
+
  =================================== */
 
 
