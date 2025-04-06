@@ -11,6 +11,8 @@
 '3': Setup simulation 4 (custom)
 '3': Setup simulation 5 (combination)
 
+Don't forget to deselect each simulation before beginning another one
+
  =================================== */
 
 
