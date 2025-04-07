@@ -61,12 +61,14 @@ class OrbList {
       for (int i = 0; i < n; i++) {
         balls[i] = new Orb();
       }
+      ARTI_GRAV.y = 0.01;
     }
     if (type == 4) {
       balls = new Orb[3];
       balls[0] = new Orb(width/4, 3*height/4, 20, 1000);
       balls[1] = new Orb(2*width/4, 3*height/4, 20, 400*PI);
       balls[2] = new Orb(3*width/4, 3*height/4, 20, 1500);
+      ARTI_GRAV.y = 0.01;
     }
   }//populate
 
@@ -116,13 +118,18 @@ class OrbList {
    Call run on each node in the list.
    =========================*/
   void run(boolean bounce) {
-    for (int i = 0; i < balls.length; i ++) {
-      balls[i].move(toggles[BOUNCE]);
+    if (type == 1 || type == 3 || type == 4) {
+      for (int i = 0; i < balls.length; i ++) {
+        balls[i].move(toggles[BOUNCE]);
+      }
     }
-    OrbNode current = front;
-    while (current != null) {
-      current.move(bounce);
-      current = current.next;
+    if (type == 2 || type == 5) {
+
+      OrbNode current = front;
+      while (current != null) {
+        current.move(bounce);
+        current = current.next;
+      }
     }
   }//applySprings
 
@@ -132,15 +139,22 @@ class OrbList {
   void applyForces() {
     if (type == 1) {
       for (int i = 1; i < balls.length; i ++) {
+        balls[i].applyArtiGrav(ARTI_GRAV);
+        balls[i].applyForce(WIND);
         PVector grav = balls[i].getGravity(balls[0], GRAVITY);
         balls[i].applyForce(grav);
       }
     }//gravity sim
     if (type == 2) {
       applySprings(SPRING_LENGTH, SPRING_K);
-
+      OrbNode current = front;
+      while (current != null) {
+        current.applyArtiGrav(ARTI_GRAV);
+        current.applyForce(WIND);
+        current = current.next;
+      }
       if (toggles[MIX]) {
-        OrbNode current = front;
+        current = front;
         while (current != null) {
           PVector grav = current.getGravity(earth, GRAVITY);
           current.applyForce(grav);
@@ -156,6 +170,7 @@ class OrbList {
     if (type == 3) {
       for (int i = 0; i < balls.length; i++) {
         balls[i].applyArtiGrav(ARTI_GRAV);
+        balls[i].applyForce(WIND);
         if (balls[i].center.x < width/2) {
           balls[i].applyForce(balls[i].getDragForce(D_COEF));
         }
@@ -164,6 +179,7 @@ class OrbList {
     if (type == 4) {
       for (int i = 0; i < balls.length; i++) {
         balls[i].applyArtiGrav(ARTI_GRAV);
+        balls[i].applyForce(WIND);
         if (balls[i].center.y > water.corner.y) {
           balls[i].applyForce(balls[i].getBuoyantForce(water));
           balls[i].applyForce(balls[i].getDragForce(water.drag));

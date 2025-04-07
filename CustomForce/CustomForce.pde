@@ -3,16 +3,16 @@
 /* ===================================
  
  Keyboard commands:
-' ': movement on/off
-'b': wall bouncing on/off
-'1': Setup simulation 1 (orbital gravity)
-'2': Setup simulation 2 (spring)
-'3': Setup simulation 3 (drag)
-'4': Setup simulation 4 (custom)
-'5' Setup simulation 5 (combination)
-
-Don't forget to deselect each simulation before beginning another one
-
+ ' ': movement on/off
+ 'b': wall bouncing on/off
+ '1': Setup simulation 1 (orbital gravity)
+ '2': Setup simulation 2 (spring)
+ '3': Setup simulation 3 (drag)
+ '4': Setup simulation 4 (custom)
+ '5' Setup simulation 5 (combination)
+ 
+ Don't forget to deselect each simulation before beginning another one
+ 
  =================================== */
 
 
@@ -21,7 +21,7 @@ int MIN_SIZE = 10;
 int MAX_SIZE = 60;
 float MIN_MASS = 10;
 float MAX_MASS = 100;
-PVector ARTI_GRAV = new PVector(0, .01);
+PVector ARTI_GRAV = new PVector(0, 0);
 PVector WIND = new PVector(0, 0);
 float G_CONSTANT = 1;
 float D_COEF = 2;
@@ -45,27 +45,26 @@ Fluid water;
 OrbList orbs;
 
 void setup() {
-  
+
   size(600, 600);
   orbs = new OrbList();
-  orbs.populate(NUM_ORBS, true, 1);
   earth = new FixedOrb (width/2, height/2, 50, 100);
 }//setup
 
 void draw() {
   background(255);
+
+  fill (255);
+  noStroke();
+  if (toggles[DRAGF] || toggles[MIX]) {
+    fill(204, 229, 255);
+    rect(0, 40, width/2, height);
+  }
   displayMode();
-   
-    fill (255);
-    rect(0, 25, width, height);
-    if(toggles[DRAGF]|| toggles[MIX]){
-      fill(204, 229, 255);
-      rect(0, 20, width/2, height);
-    }
-    
-  
-  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[BUOYANT] || toggles[MIX]){
-    if(toggles[BUOYANT]){
+
+
+  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[BUOYANT] || toggles[MIX]) {
+    if (toggles[BUOYANT]) {
       water.display();
     }
     orbs.display();
@@ -73,12 +72,10 @@ void draw() {
       orbs.applyForces();
       orbs.run(toggles[BOUNCE]);
     }//moving
-    if (toggles[MIX]){
+    if (toggles[MIX]) {
       earth.display();
     }
   }
-  
-
 }//draw
 
 /*
@@ -102,19 +99,21 @@ void indivDisandMov() {
 
 void keyPressed() {
   boolean bou;
-  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[BUOYANT] || toggles[MIX]){
+  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[BUOYANT] || toggles[MIX]) {
     bou = true;
+  } else {
+    bou = false;
   }
-  else { bou = false; }
-  
-  
+
+
   if (key == ' ') {
     toggles[MOVING] = !toggles[MOVING];
   }
   if (key == '1' && !toggles[DRAGF] && !toggles[SPRINGS] && !toggles[MIX]) {
     toggles[GRAVITY] = !toggles[GRAVITY];
     orbs.populate(NUM_ORBS, true, 1);
-
+    ARTI_GRAV.y = 0;
+    WIND.x = 0;
   }
   if (key == 'b' && bou) {
     toggles[BOUNCE] = !toggles[BOUNCE];
@@ -122,30 +121,41 @@ void keyPressed() {
   if (key == '3' && !toggles[GRAVITY] && !toggles[SPRINGS] && !toggles[MIX]) {
     toggles[DRAGF] = !toggles[DRAGF];
     orbs.populate(NUM_ORBS, false, 3);
-        
   }
-  if(key == '4'){
+  if (key == '4') {
     toggles[BUOYANT] = !toggles[BUOYANT];
     toggles[BOUNCE] = true;
     water = new Fluid(WATER_DENSITY);
     orbs.populate(3, false, 4);
   }
-  if (key == '5'){
+  if (key == '5') {
     // springs, orbital gravity, and drag
     toggles[MIX] = !toggles[MIX];
-    orbs.populate(NUM_ORBS, false, 2);     
+    orbs.populate(NUM_ORBS, false, 2);
+    ARTI_GRAV.y = 0;
+    WIND.x = 0;
+  }
+  if(keyCode == UP){
+    ARTI_GRAV.y -= 0.01;
+  }
+  if(keyCode == DOWN){
+    ARTI_GRAV.y += 0.01;
+  }
+  if(keyCode == LEFT){
+    WIND.x -= 0.1;
+  }
+  if(keyCode == RIGHT){
+    WIND.x += 0.1;
   }
 
 
 
   if (key == '2' && !toggles[DRAGF] && !toggles[GRAVITY]) {
     toggles[SPRINGS] = !toggles[SPRINGS];
-      if (toggles[SPRINGS]){
-        orbs.populate(NUM_ORBS, false, 2);
-      }
+    if (toggles[SPRINGS]) {
+      orbs.populate(NUM_ORBS, false, 2);
+    }
   }
-   
-    
 }//keyPressed
 
 
@@ -153,12 +163,11 @@ void displayMode() {
   textAlign(LEFT, TOP);
   textSize(20);
   noStroke();
-  int spacing = 85;
   int x = 0;
-  
-  
-  
+
   for (int m=0; m<toggles.length; m++) {
+    stroke(0);
+    line(0, 40, width, 40);
     //set box color
     if (toggles[m]) {
       fill(0, 255, 0);
@@ -172,4 +181,18 @@ void displayMode() {
     text(modes[m], x+2, 2);
     x+= w+5;
   }
+  if (orbs.type == 1) {
+    text("SIM: ORBITAL GRAVITY", 0, 22);
+  } else if (orbs.type == 2) {
+    text("SIM: SPRINGS", 0, 22);
+  } else if (orbs.type == 3) {
+    text("SIM: DRAG", 0, 22);
+  } else if (orbs.type == 4) {
+    text("SIM: BUOYANT", 0, 22);
+  } else if (orbs.type == 5) {
+    text("SIM: COMBINATION", 0, 22);
+  }
+
+  text("ARTI GRAV: " + ARTI_GRAV.y, width/3, 22);
+  text("WIND: " + WIND.x, 2*width/3, 22);
 }//display

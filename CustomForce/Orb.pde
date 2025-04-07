@@ -13,7 +13,7 @@ class Orb {
   Orb() {
     bsize = random(10, MAX_SIZE);
     float x = random(bsize/2, width-bsize/2);
-    float y = random(bsize/2, height-bsize/2);
+    float y = random(bsize/2+40, height-bsize/2);
     center = new PVector(x, y);
     mass = random(10, 100);
     velocity = new PVector();
@@ -106,9 +106,9 @@ class Orb {
 
       return true;
     }//bottom bounce
-    else if (center.y < bsize/2) {
+    else if (center.y-40 < bsize/2) {
       velocity.y*= -1;
-      center.y = bsize/2;
+      center.y = bsize/2-40;
       return true;
     }
     return false;
