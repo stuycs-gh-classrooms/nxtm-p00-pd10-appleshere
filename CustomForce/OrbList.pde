@@ -52,6 +52,9 @@ class OrbList {
         }
       } else {
         for (int i = 0; i < n; i++) {
+          if (front != null){
+            front.velocity = new PVector (20, 0);
+          }
           addFront(new OrbNode());
         }
       }
@@ -148,15 +151,17 @@ class OrbList {
     if (type == 2) {
       applySprings(SPRING_LENGTH, SPRING_K);
       OrbNode current = front;
-      while (current != null) {
+      
+      while (current != null && !toggles[MIX]) {
         current.applyArtiGrav(ARTI_GRAV);
         current.applyForce(WIND);
         current = current.next;
       }
+      
       if (toggles[MIX]) {
         current = front;
         while (current != null) {
-          PVector grav = current.getGravity(earth, GRAVITY);
+          PVector grav = current.getGravity(earth, G_CONSTANT);
           current.applyForce(grav);
           if (current.center.x < width/2) {
             current.applyForce(current.getDragForce(D_COEF));
