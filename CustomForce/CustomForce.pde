@@ -38,7 +38,7 @@ int SPRINGS = 4;
 int BUOYANT = 5;
 int MIX = 6;
 boolean[] toggles = new boolean[7];
-String[] modes = {"Moving", "Bounce", "Gravity", "Drag", "Springs", "Custom", "Mix"};
+String[] modes = {"Moving", "Bounce", "Gravity", "Drag", "Springs", "Bouyant", "Mix"};
 
 FixedOrb earth;
 Fluid water;
@@ -48,7 +48,7 @@ void setup() {
 
   size(600, 600);
   orbs = new OrbList();
-  earth = new FixedOrb (width/2, height/2, 50, 100);
+  earth = new FixedOrb (width/2, height/2, 10, 5);
 }//setup
 
 void draw() {
@@ -109,7 +109,7 @@ void keyPressed() {
   if (key == ' ') {
     toggles[MOVING] = !toggles[MOVING];
   }
-  if (key == '1' && !toggles[DRAGF] && !toggles[SPRINGS] && !toggles[MIX]) {
+  if (key == '1' && !toggles[DRAGF] && !toggles[SPRINGS] && !toggles[MIX] && !toggles[BUOYANT]) {
     toggles[GRAVITY] = !toggles[GRAVITY];
     orbs.populate(NUM_ORBS, true, 1);
     ARTI_GRAV.y = 0;
@@ -118,17 +118,17 @@ void keyPressed() {
   if (key == 'b' && bou) {
     toggles[BOUNCE] = !toggles[BOUNCE];
   }
-  if (key == '3' && !toggles[GRAVITY] && !toggles[SPRINGS] && !toggles[MIX]) {
+  if (key == '3' && !toggles[GRAVITY] && !toggles[SPRINGS] && !toggles[MIX] && !toggles[BUOYANT]) {
     toggles[DRAGF] = !toggles[DRAGF];
     orbs.populate(NUM_ORBS, false, 3);
   }
-  if (key == '4') {
+  if (key == '4' &&!toggles[GRAVITY] && !toggles[SPRINGS] && !toggles[MIX] && !toggles[DRAGF] ) {
     toggles[BUOYANT] = !toggles[BUOYANT];
     toggles[BOUNCE] = true;
     water = new Fluid(WATER_DENSITY);
     orbs.populate(3, false, 4);
   }
-  if (key == '5') {
+  if (key == '5' && !toggles[DRAGF] && !toggles[GRAVITY] && !toggles[BUOYANT] && !toggles[SPRINGS]) {
     // springs, orbital gravity, and drag
     toggles[MIX] = !toggles[MIX];
     orbs.populate(NUM_ORBS, false, 2);
@@ -150,7 +150,7 @@ void keyPressed() {
 
 
 
-  if (key == '2' && !toggles[DRAGF] && !toggles[GRAVITY]) {
+  if (key == '2' && !toggles[DRAGF] && !toggles[GRAVITY] && !toggles[MIX] && !toggles[BUOYANT]) {
     toggles[SPRINGS] = !toggles[SPRINGS];
     if (toggles[SPRINGS]) {
       orbs.populate(NUM_ORBS, false, 2);
