@@ -8,8 +8,8 @@
 '1': Setup simulation 1 (orbital gravity)
 '2': Setup simulation 2 (spring)
 '3': Setup simulation 3 (drag)
-'3': Setup simulation 4 (custom)
-'3': Setup simulation 5 (combination)
+'4': Setup simulation 4 (custom)
+'5' Setup simulation 5 (combination)
 
 Don't forget to deselect each simulation before beginning another one
 
@@ -21,9 +21,11 @@ int MIN_SIZE = 10;
 int MAX_SIZE = 60;
 float MIN_MASS = 10;
 float MAX_MASS = 100;
-PVector ARTI_GRAV = new PVector(0, 1);
+PVector ARTI_GRAV = new PVector(0, .01);
+PVector WIND = new PVector(0, 0);
 float G_CONSTANT = 1;
-float D_COEF = 100;
+float D_COEF = 2;
+float WATER_DENSITY = 1;
 
 int SPRING_LENGTH = 50;
 float  SPRING_K = 0.005;
@@ -33,12 +35,13 @@ int BOUNCE = 1;
 int GRAVITY = 2;
 int DRAGF = 3;
 int SPRINGS = 4;
-int CUSTOMS = 5;
+int BUOYANT = 5;
 int MIX = 6;
 boolean[] toggles = new boolean[7];
 String[] modes = {"Moving", "Bounce", "Gravity", "Drag", "Springs", "Custom", "Mix"};
 
 FixedOrb earth;
+Fluid water;
 OrbList orbs;
 
 void setup() {
@@ -61,7 +64,10 @@ void draw() {
     }
     
   
-  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[CUSTOMS] || toggles[MIX]){
+  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[BUOYANT] || toggles[MIX]){
+    if(toggles[BUOYANT]){
+      water.display();
+    }
     orbs.display();
     if (toggles[MOVING]) {
       orbs.applyForces();
@@ -96,7 +102,7 @@ void indivDisandMov() {
 
 void keyPressed() {
   boolean bou;
-  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[CUSTOMS] || toggles[MIX]){
+  if (toggles[GRAVITY] || toggles[DRAGF] || toggles[SPRINGS] || toggles[BUOYANT] || toggles[MIX]){
     bou = true;
   }
   else { bou = false; }
@@ -117,6 +123,12 @@ void keyPressed() {
     toggles[DRAGF] = !toggles[DRAGF];
     orbs.populate(NUM_ORBS, false, 3);
         
+  }
+  if(key == '4'){
+    toggles[BUOYANT] = !toggles[BUOYANT];
+    toggles[BOUNCE] = true;
+    water = new Fluid(WATER_DENSITY);
+    orbs.populate(3, false, 4);
   }
   if (key == '5'){
     // springs, orbital gravity, and drag

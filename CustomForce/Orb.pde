@@ -6,28 +6,30 @@ class Orb {
   PVector acceleration;
   float bsize;
   float mass;
+  float area;
   color c;
 
 
   Orb() {
-     bsize = random(10, MAX_SIZE);
-     float x = random(bsize/2, width-bsize/2);
-     float y = random(bsize/2, height-bsize/2);
-     center = new PVector(x, y);
-     mass = random(10, 100);
-     velocity = new PVector();
-     acceleration = new PVector();
-     setColor();
+    bsize = random(10, MAX_SIZE);
+    float x = random(bsize/2, width-bsize/2);
+    float y = random(bsize/2, height-bsize/2);
+    center = new PVector(x, y);
+    mass = random(10, 100);
+    velocity = new PVector();
+    acceleration = new PVector();
+    setColor();
   }
 
   Orb(float x, float y, float s, float m) {
-     bsize = s;
-     mass = m;
-     center = new PVector(x, y);
-     velocity = new PVector();
-     acceleration = new PVector();
-     setColor();
-   }
+    bsize = s;
+    mass = m;
+    area = sq(bsize)*PI;
+    center = new PVector(x, y);
+    velocity = new PVector();
+    acceleration = new PVector();
+    setColor();
+  }
 
   //movement behavior
   void move(boolean bounce) {
@@ -46,15 +48,24 @@ class Orb {
     scaleForce.div(mass);
     acceleration.add(scaleForce);
   }
-
-  PVector getDragForce(float cd) {
-    float dragMag = velocity.mag();
-    dragMag = -0.5 * dragMag * dragMag * cd;
-    PVector dragForce = velocity.copy();
-    dragForce.normalize();
-    dragForce.mult(dragMag);
-    return dragForce;
+  void applyArtiGrav(PVector grav) {
+    PVector g = grav.copy();
+    acceleration.add(g);
   }
+
+  PVector getDragForce(float coef) {
+    PVector drag = velocity.copy();//try with and without copy
+    drag.normalize();
+    drag.mult(coef * -0.5 * velocity.magSq());
+    //important code to limit the max effect of drag to only stopping an object and not sending it the other way
+    if (drag.mag()/mass >= velocity.mag()) {
+      PVector.mult(velocity, -1, drag);
+      drag.mult(mass);
+      //println("velocity after applying drag: " + (velocity.y - drag.y));
+    }
+    //println(drag.y - velocity.y);
+    return drag;
+  }//getDragForce
 
   PVector getGravity(Orb other, float G) {
     float strength = G * mass*other.mass;
@@ -79,7 +90,16 @@ class Orb {
     return direction;
   }//getSpring
 
-  boolean yBounce(){
+  PVector getBuoyantForce(Fluid f) {
+    PVector direction = ARTI_GRAV.copy();
+    float strength = direction.mag() * f.density * area;
+    direction.normalize();
+    direction.mult(-1);
+    direction.mult(strength);
+    return direction;
+  }
+
+  boolean yBounce() {
     if (center.y > height - bsize/2) {
       velocity.y *= -1;
       center.y = height - bsize/2;
@@ -98,8 +118,7 @@ class Orb {
       center.x = width - bsize/2;
       velocity.x *= -1;
       return true;
-    }
-    else if (center.x < bsize/2) {
+    } else if (center.x < bsize/2) {
       center.x = bsize/2;
       velocity.x *= -1;
       return true;
@@ -109,7 +128,7 @@ class Orb {
 
   boolean collisionCheck(Orb other) {
     return ( this.center.dist(other.center)
-             <= (this.bsize/2 + other.bsize/2) );
+      <= (this.bsize/2 + other.bsize/2) );
   }//collisionCheck
 
   boolean isSelected(float x, float y) {
@@ -131,5 +150,4 @@ class Orb {
     fill(0);
     //text(mass, center.x, center.y);
   }//display
-
 }//Orb

@@ -1,5 +1,5 @@
 /*===========================
- OrbList 
+ OrbList
  =========================*/
 
 class OrbList {
@@ -36,13 +36,13 @@ class OrbList {
    =========================*/
   void populate(int n, boolean ordered, int sim) {
     type = sim;
-    if (sim == 1) {
+    if (type == 1) {
       balls = new Orb[2];
       balls[0] = new FixedOrb(width/2, height/2, 50, 100);
       balls[1] = new Orb(width/2, height/2 + 100, 20, 10);
       balls[1].velocity = new PVector(10, 0);
     }//gravity sim setup
-    if (sim == 2) {
+    if (type == 2) {
       front = null;
       if (ordered) {
         for (int i = 0; i < n; i++) {
@@ -58,9 +58,15 @@ class OrbList {
     }//spring sim setup
     if (type == 3) {
       balls = new Orb[n];
-      for(int i = 0; i < n; i++){
+      for (int i = 0; i < n; i++) {
         balls[i] = new Orb();
       }
+    }
+    if (type == 4) {
+      balls = new Orb[3];
+      balls[0] = new Orb(width/4, 3*height/4, 20, 1000);
+      balls[1] = new Orb(2*width/4, 3*height/4, 20, 400*PI);
+      balls[2] = new Orb(3*width/4, 3*height/4, 20, 1500);
     }
   }//populate
 
@@ -71,7 +77,7 @@ class OrbList {
    the display method defined in the OrbNode class.
    =========================*/
   void display() {
-    if (type == 1 || type == 3) {
+    if (type == 1 || type == 3 || type == 4) {
       for (int i = 0; i < balls.length; i ++) {
         balls[i].display();
       }
@@ -133,28 +139,34 @@ class OrbList {
     if (type == 2) {
       applySprings(SPRING_LENGTH, SPRING_K);
 
-      if (toggles[MIX]){
-          OrbNode current = front;
-          while (current != null) {
-            PVector grav = current.getGravity(earth, GRAVITY);
-            current.applyForce(grav);
-            if (current.center.x < width/2){
-              PVector artidrag = (current.velocity.mult( -0.75));
-              current.applyForce(artidrag);
-            }                               
-            current = current.next;
+      if (toggles[MIX]) {
+        OrbNode current = front;
+        while (current != null) {
+          PVector grav = current.getGravity(earth, GRAVITY);
+          current.applyForce(grav);
+          if (current.center.x < width/2) {
+            current.applyForce(current.getDragForce(D_COEF));
           }
-       }        
+          current = current.next;
+        }
+      }
     }//spring sim || mix sim
-    
-    
+
+
     if (type == 3) {
-      if (toggles[DRAGF]) {
-        for (int i = 0; i < balls.length; i++) {
-          balls[i].applyForce(ARTI_GRAV);
-          if (balls[i].center.x < width/2) {
-            balls[i].applyForce(balls[i].getDragForce(D_COEF));
-          }
+      for (int i = 0; i < balls.length; i++) {
+        balls[i].applyArtiGrav(ARTI_GRAV);
+        if (balls[i].center.x < width/2) {
+          balls[i].applyForce(balls[i].getDragForce(D_COEF));
+        }
+      }
+    }
+    if (type == 4) {
+      for (int i = 0; i < balls.length; i++) {
+        balls[i].applyArtiGrav(ARTI_GRAV);
+        if (balls[i].center.y > water.corner.y) {
+          balls[i].applyForce(balls[i].getBuoyantForce(water));
+          balls[i].applyForce(balls[i].getDragForce(water.drag));
         }
       }
     }
